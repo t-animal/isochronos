@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>Isochronos</title>
+
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
+	<script defer src="https://code.getmdl.io/1.2.0/material.min.js"></script>
+
+	<style>
+
+		.mdl-layout__content {
+			display: flex !important;
+		}
+
+		.mdl-layout__content > .mdl-layout__tab-panel.is-active {
+			display: flex !important;
+			flex-grow: 1;
+		}
+
+		.mdl-layout__content > .mdl-layout__tab-panel.is-active > .page-content {
+			display: flex;
+			flex-grow: 1;
+		}
+
+		#application-container {
+			flex-grow: 1;
+		}
+
+		#application-container div:not(#map-container) {
+			z-index: 2;
+		}
+
+		#map-container {
+			flex-grow: 1;
+		}
+
+		.mdl-mini-footer{
+			padding: 5px 16px;
+		}
+
+		.settings-widget {
+			margin: 15px;
+			position: relative;
+		}
+
+		.settings-widget .mdl-layout__header {
+			min-height: 30px;
+		}
+
+		.settings-widget .mdl-layout__header .mdl-layout__header-row {
+			height: 30px;
+		}
+
+		.settings-widget .mdl-layout__content {
+			margin-top: 5px;
+		}
+
+		.settings-widget button.add-map {
+			position: absolute;
+		    right: 10px;
+		    bottom: -20px;
+		}
+	</style>
+</head>
+<body>
+
+<!-- Simple header with scrollable tabs. -->
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<!-- Title -->
+			<span class="mdl-layout-title">IsoChronos</span>
+		</div>
+		<!-- Tabs -->
+		<nav class="mdl-layout__tab-bar mdl-js-ripple-effect">
+			<a href="#scroll-tab-1" class="mdl-layout__tab is-active">Application</a>
+			<a href="#scroll-tab-2" class="mdl-layout__tab">About</a>
+		</nav>
+	</header>
+	<main class="mdl-layout__content">
+		<section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
+			<div class="page-content">
+
+				<div id="application-container" class="mdl-grid mdl-grid--no-spacing">
+					<div class="mdl-cell mdl-cell--2-col mdl-components__nav docs-text-styling mdl-shadow--4dp">
+						<h3>Create your map</h3>
+
+
+						<div class="settings-widget mdl-shadow--2dp">
+							<header class="mdl-layout__header">
+								<div class="mdl-layout__header-row">
+									<span class="mdl-layout-title">IsoChronos</span>
+								</div>
+							</header>
+							<div class="mdl-layout__content">
+								<table>
+									<tr><td>Range: </td><td><input type="number" style="width:7ex"> minutes</td></tr>
+									<tr><td>Transport: </td><td><select><option>Car</option><option>Bike</option></select></td></tr>
+									<tr><td>Color: </td><td><input type="color"></td></tr>
+								</table>
+							</div>
+
+							<!-- Colored FAB button with ripple -->
+							<button class="add-map mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
+							  <i class="material-icons">add</i>
+							</button>
+						</div>
+					</div>
+
+					<div id="map-container">1</div>
+
+					<div class="mdl-cell mdl-cell--2-col mdl-shadow--4dp">
+						<h3>Information</h3>
+
+					</div>
+				</div>
+
+			</div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="scroll-tab-2">
+			<div class="page-content"><!-- Your content goes here --></div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="scroll-tab-3">
+			<div class="page-content"><!-- Your content goes here --></div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="scroll-tab-4">
+			<div class="page-content"><!-- Your content goes here --></div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="scroll-tab-5">
+			<div class="page-content"><!-- Your content goes here --></div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="scroll-tab-6">
+			<div class="page-content"><!-- Your content goes here --></div>
+		</section>
+	</main>
+
+	<footer class="mdl-mini-footer">
+  <div class="mdl-mini-footer__left-section">
+    <div class="mdl-logo">IsoChronos</div>
+    <ul class="mdl-mini-footer__link-list">
+      <li><a href="#">Help</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">Imprint</a></li>
+    </ul>
+  </div>
+</footer>
+</div>
+
+<script>
+
+	var map;
+	function initMap() {
+		window.setTimeout(function(){
+			  map = new google.maps.Map(document.getElementById('map-container'), {
+			    center: {lat: -34.397, lng: 150.644},
+			    zoom: 8
+			  });
+		}, 300);
+	}
+
+</script>
+<script src="./apikey.js"></script>
+<script>document.write('<script src="https://maps.googleapis.com/maps/api/js?key=' + apiKey + '&callback=initMap" async defer></' + 'script>');</script>
+
+</body>
+</html>
