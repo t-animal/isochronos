@@ -3,6 +3,15 @@ window.isochronos = (function() {
 
 	var map;
 	var centerMarker;
+	var dependantMarkers = {
+		baseMarkers: [],
+		refinementMarkers: []
+	}
+	var directionsService;
+	var directionsRenderers = [];
+
+	var currentCalculationTimeout = null;
+
 	var CURSOR_OFFSET_X = 15;
 	var CURSOR_OFFSET_Y = 10;
 
@@ -127,6 +136,76 @@ window.isochronos = (function() {
 			uiElems.newLocationMarker.css({visibility: "visible"});
 		}
 	}
+
+	function addNewOverlay(){
+		var firstWidget = uiElems.settingsArea.find(".settings-widget:first");
+		var isLocationSet = !firstWidget.find(".settings .location").hasClass("unset");
+
+		if(!isLocationSet){
+			showToast("Please drag the location marker on the map first");
+			return;
+		}
+
+		firstWidget.find(".add-button").hide();
+		firstWidget.find(".add-spinner").show();
+
+
+		//this might fail on parts of the map where the projection distorts a lot :(
+		//TODO: mit projection fixen
+		var latLng = centerMarker.getPosition();
+		var x = latLng.lng();
+		var y = latLng.lat();
+
+		for(var rho = 0; rho < 360; rho += 30){
+			var X = x + 0.05 * Math.cos(rho * Math.PI / 180);
+			var Y = y + 0.05 * Math.sin(rho * Math.PI / 180);
+
+			dependantMarkers.baseMarkers.push(
+				new google.maps.Marker({
+							position: {lat: Y, lng: X},
+							map: map,
+							draggable: true,
+							title: 'A - ' + rho,
+							label: "a"
+						})
+			);
+		}
+
+		calculateRouteToAllBaseMarkers(0);
+
+		function calculateRouteToAllBaseMarkers(markerIndex){
+			if(markerIndex >= dependantMarkers.baseMarkers.length){
+				window.setTimeout(shiftBaseMarkers, 0);
+				return;
+			}
+
+			var currentMarker = dependantMarkers.baseMarkers[markerIndex];
+
+			//calculate route to a single marker
+			directionsService.route({
+					origin: centerMarker.getPosition(),
+					destination: currentMarker.getPosition(),
+					travelMode: google.maps.TravelMode.DRIVING
+				}, function(response, status) {
+					//Draw the responst
+					if (status === google.maps.DirectionsStatus.OK) {
+						var renderer = new google.maps.DirectionsRenderer({map: map}).setDirections(response);
+						directionsRenderers.push(renderer);
+
+						currentMarker._directionsFromCenter = response;
+					} else {
+						window.alert('Directions for rho = ' + rho + 'request failed due to ' + status);
+					}
+
+					//trigger planning of next route (with rate limiting)
+					currentCalculationTimeout = window.setTimeout(function(){
+						calculateRouteToAllBaseMarkers(markerIndex + 1);
+					}, 100);
+				}
+			);
+		}
+	}
+
 
 	/*
 	 * Begin utility functions
