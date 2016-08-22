@@ -270,6 +270,20 @@
 				minZoom: 3 //TODO: Beim rauszoomen checken, dass nicht bounds [-180, 180] degrees (mehr als eine welt sichtbar)
 			});
 
+			//Ask user location right after this function
+			window.setTimeout(function(){
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						var pos = {
+							lat: position.coords.latitude,
+							lng: position.coords.longitude
+						};
+
+						map.setCenter(pos);
+						map.setZoom(9);
+					});
+				}
+			}, 0);
 
 		}, 500);
 
