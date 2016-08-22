@@ -7,6 +7,10 @@
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 	<link rel="stylesheet" href="https://code.getmdl.io/1.2.0/material.indigo-pink.min.css">
+
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
 	<script defer src="https://code.getmdl.io/1.2.0/material.min.js"></script>
 
 	<style>
@@ -29,16 +33,27 @@
 			flex-grow: 1;
 		}
 
-		#application-container div:not(#map-container) {
+		#application-container > div:not(#map-container) {
 			z-index: 2;
 		}
 
 		#map-container {
 			flex-grow: 1;
+			display:flex;
+			flex-direction: row;
+			position: relative;
+		}
+
+		#map {
+			flex-grow:1;
 		}
 
 		.mdl-mini-footer{
 			padding: 5px 16px;
+		}
+
+		#settings-area {
+			overflow: auto;
 		}
 
 		.settings-widget {
@@ -58,12 +73,63 @@
 			margin-top: 5px;
 		}
 
-		.settings-widget button.add-map {
+		.settings-widget .hover-edge {
 			position: absolute;
-		    right: 10px;
+		    right: 15px;
 		    bottom: -20px;
 		}
-	</style>
+
+		.round-spinner {
+			border-radius: 50%;
+			height: 40px;
+			width: 40px;
+			background-color: rgb(255,64,129);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.round-spinner .mdl-spinner__layer {
+			border-color: white;
+		}
+
+		.settings-widget .settings td{
+			vertical-align: top;
+		}
+
+		.settings-widget .settings td:first-child {
+			width: 90px;
+		}
+
+		.mdl-slider__container {
+			left: -20px;
+			display: inline-flex;
+			margin-right: -40px;
+		}
+
+		.tansport-type-icon {
+			width: 20px;
+		}
+
+		/* increase toast-height */
+		.mdl-snackbar--active {
+			-webkit-transform: translate(0, -80px);
+			 transform: translate(0, -80px);
+		}
+
+		@media (min-width: 480px){
+			.mdl-snackbar--active {
+				-webkit-transform: translate(-50%, -80px);
+				 transform: translate(-50%, -50px);
+			}
+		}
+
+		.ui-draggable-dragging{
+			z-index: 5;
+			cursor: -moz-grabbing;
+			cursor: -webkit-grabbing;
+			cursor: grabbing;
+		}	</style>
 </head>
 <body>
 
@@ -85,32 +151,57 @@
 			<div class="page-content">
 
 				<div id="application-container" class="mdl-grid mdl-grid--no-spacing">
-					<div class="mdl-cell mdl-cell--2-col mdl-components__nav docs-text-styling mdl-shadow--4dp">
+					<div id="settings-area" class="mdl-cell mdl-cell--2-col mdl-components__nav docs-text-styling mdl-shadow--4dp">
 						<h3>Create your map</h3>
 
 
 						<div class="settings-widget mdl-shadow--2dp">
 							<header class="mdl-layout__header">
 								<div class="mdl-layout__header-row">
-									<span class="mdl-layout-title">IsoChronos</span>
+									<span class="mdl-layout-title">Marker A</span>
 								</div>
 							</header>
 							<div class="mdl-layout__content">
-								<table>
-									<tr><td>Range: </td><td><input type="number" style="width:7ex"> minutes</td></tr>
-									<tr><td>Transport: </td><td><select><option>Car</option><option>Bike</option></select></td></tr>
-									<tr><td>Color: </td><td><input type="color"></td></tr>
+								<table class="settings">
+									<tr><td>Location: </td><td class="location unset">
+																<img id="newLocationMarker" src="marker-cross.png" />
+																<span class="location-text"></span></td></tr>
+									<tr><td>Minutes: </td><td><input class="mdl-slider mdl-js-slider transport-range" type="range" min="5" max="120" value="20">
+																<span>20</span></td></tr>
+									<tr><td>Transport: </td><td><label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																  <input type="radio" class="transport-car mdl-radio__button" name="transport-type" value="car" checked>
+																  <span class="mdl-radio__label"><img src="icon-car.png" class="tansport-type-icon" alt="Car"/></span>
+																</label><br />
+																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="bike">
+																  <span class="mdl-radio__label"><img src="icon-biker.png" class="tansport-type-icon" alt="Bycicle" /></span>
+																</label><br />
+																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="walk">
+																  <span class="mdl-radio__label"><img src="icon-walk.png" class="tansport-type-icon" alt="Walking" /></span>
+																</label></tr>
+									<tr>
+										<td>Pessimistic estimates?:</td>
+										<td style="vertical-align:middle"><label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"><input type="checkbox" id="switch-1" class="mdl-switch__input" name="pessimism" /><span></span></label></td>
+										</tr>
 								</table>
 							</div>
 
 							<!-- Colored FAB button with ripple -->
-							<button class="add-map mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored">
-							  <i class="material-icons">add</i>
-							</button>
+							<div class="hover-edge">
+								<button class="add-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-button--mini-fab" disabled="disabled">
+								  <i class="material-icons">add</i>
+								</button>
+								<div class="add-spinner round-spinner" style="display: none;">
+									<div class="mdl-spinner mdl-js-spinner is-active mdl-spinner--single-color"></div>
+								</div>
+							</div>
 						</div>
 					</div>
 
-					<div id="map-container">1</div>
+					<div id="map-container">
+						<div id="map">Here comes the map. If you see this for an extended time, please enable javascript from googleapis.com</div>
+					</div>
 
 					<div class="mdl-cell mdl-cell--2-col mdl-shadow--4dp">
 						<h3>Information</h3>
@@ -147,18 +238,144 @@
     </ul>
   </div>
 </footer>
+
+<div>
+	<div id="toast" class="mdl-js-snackbar mdl-snackbar">
+		<div class="mdl-snackbar__text"></div>
+		<button class="mdl-snackbar__action" type="button"></button>
+	</div>
+</div>
+
 </div>
 
 <script>
 
 	var map;
+	var newMarker;
+
+	var uiElems = {
+		settingsArea: $("#settings-area"),
+		toastElem: $("#toast"),
+		mapContainer: $("#map-container"),
+		mapElem: $("#map"),
+		newLocationMarker: $("#newLocationMarker")
+	}
+
 	function initMap() {
+		//wait for MDL to settle
 		window.setTimeout(function(){
-			  map = new google.maps.Map(document.getElementById('map-container'), {
-			    center: {lat: -34.397, lng: 150.644},
-			    zoom: 8
-			  });
-		}, 300);
+			map = new google.maps.Map(uiElems.mapElem[0], {
+				center: {lat: 49.58882244495942, lng: 11.032677263021474},//{lat: 32, lng:-13},
+				zoom: 9, //3,
+				minZoom: 3 //TODO: Beim rauszoomen checken, dass nicht bounds [-180, 180] degrees (mehr als eine welt sichtbar)
+			});
+
+
+		}, 500);
+
+
+		initUI();
+	}
+
+	function offsetToLatLng(x, y){
+		  // retrieve the lat lng for the far extremities of the (visible) map
+		  var latLngBounds = map.getBounds();
+		  var neBound = latLngBounds.getNorthEast();
+		  var swBound = latLngBounds.getSouthWest();
+
+		  // convert the bounds in pixels
+		  var neBoundInPx = map.getProjection().fromLatLngToPoint(neBound);
+		  var swBoundInPx = map.getProjection().fromLatLngToPoint(swBound);
+
+		  // compute the percent of x and y coordinates related to the div containing the map; in my case the screen
+		  var procX = (x-uiElems.mapElem.offset().left)/uiElems.mapElem.width();
+		  var procY = (y-uiElems.mapElem.offset().top)/uiElems.mapElem.height();
+
+		  // compute new coordinates in pixels for lat and lng;
+		  // for lng : subtract from the right edge of the container the left edge,
+		  // multiply it by the percentage where the x coordinate was on the screen
+		  // related to the container in which the map is placed and add back the left boundary
+		  // you should now have the Lng coordinate in pixels
+		  // do the same for lat
+		  var newLngInPx = (neBoundInPx.x - swBoundInPx.x) * procX + swBoundInPx.x;
+		  var newLatInPx = (swBoundInPx.y - neBoundInPx.y) * procY + neBoundInPx.y;
+
+		  // convert from google point in lat lng and have fun :)
+		  return map.getProjection().fromPointToLatLng(new google.maps.Point(newLngInPx, newLatInPx));
+	}
+
+	function addNewMarker(x, y){
+		var latLng = offsetToLatLng(x, y);
+		newMarker = new google.maps.Marker({
+							position: latLng,
+							map: map,
+							draggable: true,
+							title: 'Center A',
+							label: "A"
+						});
+
+		$("#settings-area .settings-widget:first-of-type .location-text").text(latLng.toString());
+		uiElems.settingsArea.find(".settings-widget:first .settings .location").removeClass("unset");
+		newMarker.addListener("dragend", function(event){
+			$("#settings-area .settings-widget:first-of-type .location-text").text(event.latLng.toString());
+		});
+	}
+
+	function initUI(){
+		uiElems.settingsArea.find("button").removeAttr('disabled');
+		uiElems.settingsArea.delegate("button", "click", addNewOverlay);
+
+		var CURSOR_OFFSET_X = 15;
+		var CURSOR_OFFSET_Y = 10;
+
+		uiElems.newLocationMarker
+				.draggable({ containment: "#application-container",
+				             cursorAt: {top: CURSOR_OFFSET_Y, left: CURSOR_OFFSET_X},
+				             appendTo: "body",
+				             helper: "clone"
+				})
+				.on("dragstart", function() {
+					uiElems.newLocationMarker.css({visibility: "hidden"});
+				})
+				.on("dragstop", function(event) {
+					var x = event.pageX;
+					var y = event.pageY;
+
+					var mapX = uiElems.mapContainer.offset().left;
+					var mapY = uiElems.mapContainer.offset().top;
+					var mapH = uiElems.mapContainer.height();
+					var mapW = uiElems.mapContainer.width();
+
+					if(x > mapX && x < mapX + mapW && y > mapY && y < mapY + mapH){
+						addNewMarker(event.pageX - CURSOR_OFFSET_X + uiElems.newLocationMarker.width() / 2,
+						             event.pageY - CURSOR_OFFSET_Y + uiElems.newLocationMarker.height() - 5); //TODO: woher kommt die 5?
+						uiElems.newLocationMarker.hide();
+					} else {
+						uiElems.newLocationMarker.css({visibility: "visible"});
+					}
+				});
+
+		uiElems.settingsArea.find(".transport-range").change(function(){
+			$(this).parent().next().text(this.value);
+		})
+
+	}
+
+	function showToast(text){
+		uiElems.toastElem[0].MaterialSnackbar.showSnackbar({message: text});
+	}
+
+	function addNewOverlay(){
+		var firstWidget = uiElems.settingsArea.find(".settings-widget:first");
+		var isLocationSet = !firstWidget.find(".settings .location").hasClass("unset");
+
+		if(!isLocationSet){
+			showToast("Please drag the location marker on the map first");
+			return;
+		}
+
+		firstWidget.find(".add-button").hide();
+		firstWidget.find(".add-spinner").show();
 	}
 
 </script>
