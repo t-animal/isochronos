@@ -91,7 +91,7 @@ window.isochronos = (function() {
 				})
 				.on("dragstop", addMarkerAtMousePosition);
 
-		uiElems.settingsArea.find(".transport-range").change(function(){
+		uiElems.settingsArea.find(".transport-range").on ("input", function(){
 			$(this).parent().next().text(this.value);
 		})
 
