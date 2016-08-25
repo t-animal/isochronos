@@ -1,6 +1,12 @@
 window.isochronos = (function() {
 	"use strict";
+	return {
+		init: init,
+		initMap: initMap
+	}
+})();
 
+	var settingsCardTemplate = null;
 	var map;
 	var centerMarker;
 	var dependantMarkers = {
@@ -9,6 +15,8 @@ window.isochronos = (function() {
 	}
 	var directionsService;
 	var directionsRenderers = [];
+
+	var templateNode;
 
 	var currentCalculationTimeout = null;
 
@@ -30,7 +38,7 @@ window.isochronos = (function() {
 			toastElem: $("#toast"),
 			mapContainer: $("#map-container"),
 			mapElem: $("#map"),
-			newLocationMarker: $("#newLocationMarker")
+			newLocationMarker: null
 		}
 
 		document.write('<script src="https://maps.googleapis.com/maps/api/js?key=' + apiKey + '&callback=isochronos.initMap" async defer></' + 'script>');
@@ -77,8 +85,36 @@ window.isochronos = (function() {
 	 * Initialises the ui elements, setting callbacks etc.
 	 */
 	function initUI(){
-		uiElems.settingsArea.find("button").removeAttr('disabled');
 		uiElems.settingsArea.delegate("button", "click", addNewOverlay);
+
+		uiElems.settingsArea.find(".transport-range").delegate ("input", function(){
+			$(this).parent().next().text(this.value);
+		})
+
+	}
+
+	/**
+	 * Adds a new settings card to the left sidebar
+	 */
+	function addNewSettingsCard(){
+		if(settingsCardTemplate === null){
+			var fragment = $("#settings-card-template");
+
+			if(typeof fragment[0].content === "undefined"){
+				//template tag is not yet supported
+				var dummy = $("#settings-card-template").children().clone();
+			}else{
+				var dummy = $(document.importNode(fragment[0].content, true)).children();
+			}
+
+			settingsCardTemplate = dummy;
+		}
+
+		var newSettingsCard = settingsCardTemplate.clone().hide();
+		componentHandler.upgradeElements(newSettingsCard); //upgrade MDL elements
+		newSettingsCard.insertAfter(uiElems.settingsArea.children().first()).fadeIn();
+
+		uiElems.newLocationMarker = newSettingsCard.find(".new-location-marker");
 
 		uiElems.newLocationMarker
 				.draggable({ containment: "#application-container",
@@ -90,12 +126,8 @@ window.isochronos = (function() {
 					uiElems.newLocationMarker.css({visibility: "hidden"});
 				})
 				.on("dragstop", addMarkerAtMousePosition);
-
-		uiElems.settingsArea.find(".transport-range").on ("input", function(){
-			$(this).parent().next().text(this.value);
-		})
-
 	}
+
 
 
 	/**
@@ -138,7 +170,7 @@ window.isochronos = (function() {
 			var correctedY =  event.pageY - CURSOR_OFFSET_Y + uiElems.newLocationMarker.height() - 5; //TODO: woher kommt die 5?
 
 			addNewMarker(offsetToLatLng(x, y));
-			uiElems.newLocationMarker.hide();
+			uiElems.newLocationMarker.remove();
 		} else {
 			uiElems.newLocationMarker.css({visibility: "visible"});
 		}
@@ -368,8 +400,3 @@ window.isochronos = (function() {
 		uiElems.toastElem[0].MaterialSnackbar.showSnackbar({message: text});
 	}
 
-	return {
-		init: init,
-		initMap: initMap
-	}
-})();

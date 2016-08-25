@@ -40,48 +40,50 @@
 						<h3>Create your map</h3>
 
 
-						<div class="settings-widget mdl-shadow--2dp">
-							<header class="mdl-layout__header">
-								<div class="mdl-layout__header-row">
-									<span class="mdl-layout-title">Marker A</span>
+						<template id="settings-card-template" style="display:none">
+							<div class="settings-widget mdl-shadow--2dp">
+								<header class="mdl-layout__header">
+									<div class="mdl-layout__header-row">
+										<span class="mdl-layout-title">Marker A</span>
+									</div>
+								</header>
+								<div class="mdl-layout__content">
+									<table class="settings">
+										<tr><td>Location: </td><td class="location unset">
+																	<img class="new-location-marker" src="marker-cross.png" />
+																	<span class="location-text"></span></td></tr>
+										<tr><td>Minutes: </td><td><input class="mdl-slider mdl-js-slider transport-range" type="range" min="5" max="120" value="20">
+																	<span>20</span></td></tr>
+										<tr><td>Transport: </td><td><label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																	  <input type="radio" class="transport-car mdl-radio__button" name="transport-type" value="car" checked>
+																	  <span class="mdl-radio__label"><img src="icon-car.png" class="tansport-type-icon" alt="Car"/></span>
+																	</label><br />
+																	<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																	  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="bike">
+																	  <span class="mdl-radio__label"><img src="icon-biker.png" class="tansport-type-icon" alt="Bycicle" /></span>
+																	</label><br />
+																	<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
+																	  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="walk">
+																	  <span class="mdl-radio__label"><img src="icon-walk.png" class="tansport-type-icon" alt="Walking" /></span>
+																	</label></td></tr>
+										<tr>
+											<td>Pessimistic estimates?:</td>
+											<td style="vertical-align:middle"><label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"><input type="checkbox" id="switch-1" class="mdl-switch__input" name="pessimism" /><span></span></label></td>
+											</tr>
+									</table>
 								</div>
-							</header>
-							<div class="mdl-layout__content">
-								<table class="settings">
-									<tr><td>Location: </td><td class="location unset">
-																<img id="newLocationMarker" src="marker-cross.png" />
-																<span class="location-text"></span></td></tr>
-									<tr><td>Minutes: </td><td><input class="mdl-slider mdl-js-slider transport-range" type="range" min="5" max="120" value="20">
-																<span>20</span></td></tr>
-									<tr><td>Transport: </td><td><label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-																  <input type="radio" class="transport-car mdl-radio__button" name="transport-type" value="car" checked>
-																  <span class="mdl-radio__label"><img src="icon-car.png" class="tansport-type-icon" alt="Car"/></span>
-																</label><br />
-																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-																  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="bike">
-																  <span class="mdl-radio__label"><img src="icon-biker.png" class="tansport-type-icon" alt="Bycicle" /></span>
-																</label><br />
-																<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect">
-																  <input type="radio" class="transport-bike mdl-radio__button" name="transport-type" value="walk">
-																  <span class="mdl-radio__label"><img src="icon-walk.png" class="tansport-type-icon" alt="Walking" /></span>
-																</label></tr>
-									<tr>
-										<td>Pessimistic estimates?:</td>
-										<td style="vertical-align:middle"><label class="mdl-switch mdl-js-switch mdl-js-ripple-effect"><input type="checkbox" id="switch-1" class="mdl-switch__input" name="pessimism" /><span></span></label></td>
-										</tr>
-								</table>
-							</div>
 
-							<!-- Colored FAB button with ripple -->
-							<div class="hover-edge">
-								<button class="add-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-button--mini-fab" disabled="disabled">
-								  <i class="material-icons">add</i>
-								</button>
-								<div class="add-spinner round-spinner" style="display: none;">
-									<div class="mdl-spinner mdl-js-spinner is-active mdl-spinner--single-color"></div>
+								<!-- Colored FAB button with ripple -->
+								<div class="hover-edge">
+									<button class="add-button mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-button--mini-fab">
+									  <i class="material-icons">add</i>
+									</button>
+									<div class="add-spinner round-spinner" style="display: none;">
+										<div class="mdl-spinner mdl-js-spinner is-active mdl-spinner--single-color"></div>
+									</div>
 								</div>
 							</div>
-						</div>
+						</template>
 					</div>
 
 					<div id="map-container">

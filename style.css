@@ -44,6 +44,10 @@
 	position: relative;
 }
 
+.settings-widget:first-of-type {
+    margin-bottom: 40px;
+}
+
 .settings-widget .mdl-layout__header {
 	min-height: 30px;
 }
@@ -60,6 +64,10 @@
 	position: absolute;
     right: 15px;
     bottom: -20px;
+}
+
+.settings-widget .new-location-marker {
+	cursor: pointer;
 }
 
 .round-spinner {
